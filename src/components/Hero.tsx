@@ -460,7 +460,7 @@ const Hero: React.FC = () => {
               <div className="flex items-center justify-between mb-6 pb-6 border-b border-gray-200">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                    <Zap className="w-6 h-6 text-black" />
+                    <Zap className="w-6 h-6 text-white" />
                   </div>
                   <div>
                     <div className="text-lg font-bold text-black">
@@ -502,7 +502,7 @@ const Hero: React.FC = () => {
                   className="flex gap-3 flex-row-reverse"
                 >
                   <div className="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-4 h-4 text-black" />
+                    <Zap className="w-4 h-4 text-white" />
                   </div>
                   <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl rounded-tr-none max-w-[80%]">
                     <p className="text-sm text-gray-800 mb-3">
