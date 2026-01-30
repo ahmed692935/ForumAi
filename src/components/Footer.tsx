@@ -186,19 +186,19 @@ import {
   Linkedin,
   Github,
   Mail,
-  ArrowUpRight,
-//   Zap,
+  //   ArrowUpRight,
+  //   Zap,
   type LucideIcon,
 } from "lucide-react";
 
-interface FooterLink {
-  name: string;
-  href: string;
-}
+// interface FooterLink {
+//   name: string;
+//   href: string;
+// }
 
-interface FooterSection {
-  [key: string]: FooterLink[];
-}
+// interface FooterSection {
+//   [key: string]: FooterLink[];
+// }
 
 interface SocialLink {
   icon: LucideIcon;
@@ -207,26 +207,26 @@ interface SocialLink {
 }
 
 const Footer: React.FC = () => {
-  const footerLinks: FooterSection = {
-    Product: [
-      { name: "Features", href: "#features" },
-      { name: "Pricing", href: "#pricing" },
-      { name: "Integration", href: "#integration" },
-      { name: "API Docs", href: "#docs" },
-    ],
-    Company: [
-      { name: "About", href: "#about" },
-      { name: "Blog", href: "#blog" },
-      { name: "Careers", href: "#careers" },
-      { name: "Contact", href: "#contact" },
-    ],
-    Legal: [
-      { name: "Privacy", href: "#privacy" },
-      { name: "Terms", href: "#terms" },
-      { name: "Security", href: "#security" },
-      { name: "Compliance", href: "#compliance" },
-    ],
-  };
+  //   const footerLinks: FooterSection = {
+  //     Product: [
+  //       { name: "Features", href: "#features" },
+  //       { name: "Pricing", href: "#pricing" },
+  //       { name: "Integration", href: "#integration" },
+  //       { name: "API Docs", href: "#docs" },
+  //     ],
+  //     Company: [
+  //       { name: "About", href: "#about" },
+  //       { name: "Blog", href: "#blog" },
+  //       { name: "Careers", href: "#careers" },
+  //       { name: "Contact", href: "#contact" },
+  //     ],
+  //     Legal: [
+  //       { name: "Privacy", href: "#privacy" },
+  //       { name: "Terms", href: "#terms" },
+  //       { name: "Security", href: "#security" },
+  //       { name: "Compliance", href: "#compliance" },
+  //     ],
+  //   };
 
   const socialLinks: SocialLink[] = [
     { icon: Twitter, href: "#", label: "Twitter" },
@@ -241,9 +241,11 @@ const Footer: React.FC = () => {
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#10b98105_1px,transparent_1px),linear-gradient(to_bottom,#10b98105_1px,transparent_1px)] bg-[size:64px_64px]" />
 
       <div className="max-w-7xl mx-auto px-6 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16">
+        {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-12 mb-16"> */}
+        <div className=" mb-16">
           {/* Brand Section */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* <div className="lg:col-span-2 space-y-6"> */}
+          <div className="space-y-6">
             <Link to="/" className="flex items-center space-x-2 group">
               {/* <motion.div
                 whileHover={{ rotate: 180 }}
@@ -280,7 +282,7 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Link Sections */}
-          {Object.entries(footerLinks).map(([category, links], index) => (
+          {/* {Object.entries(footerLinks).map(([category, links], index) => (
             <div key={category} className="space-y-4">
               <h3 className="text-sm font-bold text-black uppercase tracking-wider">
                 {category}
@@ -305,7 +307,7 @@ const Footer: React.FC = () => {
                 ))}
               </ul>
             </div>
-          ))}
+          ))} */}
         </div>
 
         {/* Newsletter Section */}

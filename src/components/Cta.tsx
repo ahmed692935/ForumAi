@@ -235,7 +235,7 @@ const CTA: React.FC = () => {
             className="flex flex-col sm:flex-row justify-center gap-4 pt-8"
           >
             <Link
-              to="/signup"
+              to="/login"
               className="group relative px-10 py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold text-lg rounded-xl overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300"
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
@@ -250,9 +250,9 @@ const CTA: React.FC = () => {
               />
             </Link>
 
-            <button className="px-10 py-5 bg-black/5 border-2 border-emerald-500/30 text-black font-bold text-lg rounded-xl hover:bg-black/10 hover:border-emerald-500/50 transition-all backdrop-blur-sm">
+            {/* <button className="px-10 py-5 bg-black/5 border-2 border-emerald-500/30 text-black font-bold text-lg rounded-xl hover:bg-black/10 hover:border-emerald-500/50 transition-all backdrop-blur-sm">
               TALK TO SALES
-            </button>
+            </button> */}
           </motion.div>
 
           {/* Trust Badge */}

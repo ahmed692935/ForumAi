@@ -308,7 +308,10 @@ const Hero: React.FC = () => {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
+    <section
+      id="platform"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white"
+    >
       {/* Animated Background */}
       <div className="absolute inset-0">
         {/* Grid Pattern */}
@@ -400,7 +403,7 @@ const Hero: React.FC = () => {
               className="flex flex-wrap gap-4"
             >
               <Link
-                to="/signup"
+                to="/login"
                 className="group relative px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold rounded-lg overflow-hidden hover:shadow-2xl hover:shadow-emerald-500/50 transition-all duration-300"
               >
                 <span className="relative z-10 flex items-center gap-2">
@@ -414,9 +417,9 @@ const Hero: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 />
               </Link>
-              <button className="px-8 py-4 bg-black/5 border border-emerald-500/30 text-black font-bold rounded-lg hover:bg-black/10 hover:border-emerald-500/50 transition-all backdrop-blur-sm">
+              {/* <button className="px-8 py-4 bg-black/5 border border-emerald-500/30 text-black font-bold rounded-lg hover:bg-black/10 hover:border-emerald-500/50 transition-all backdrop-blur-sm">
                 VIEW DEMO
-              </button>
+              </button> */}
             </motion.div>
 
             {/* Stats */}
