@@ -464,7 +464,7 @@ const Documents: React.FC = () => {
 
   const getFileIcon = (fileType: string) => {
     if (fileType === "pdf") {
-      return <FileText className="w-6 h-6 text-red-500" />;
+      return <FileText className="w-6 h-6 text-green-600" />;
     }
     if (fileType === "docx" || fileType === "doc") {
       return <FileText className="w-6 h-6 text-blue-500" />;
@@ -549,9 +549,9 @@ const Documents: React.FC = () => {
                       <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                         Upload Date
                       </th>
-                      <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
+                      {/* <th className="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">
                         File Hash
-                      </th>
+                      </th> */}
                       <th className="px-6 py-4 text-right text-xs font-bold text-gray-700 uppercase tracking-wider">
                         Actions
                       </th>
@@ -573,9 +573,9 @@ const Documents: React.FC = () => {
                               <p className="font-semibold text-gray-900">
                                 {doc.title}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              {/* <p className="text-xs text-gray-500">
                                 ID: {doc.id}
-                              </p>
+                              </p> */}
                             </div>
                           </div>
                         </td>
@@ -587,11 +587,11 @@ const Documents: React.FC = () => {
                         <td className="px-6 py-4 text-sm text-gray-600">
                           {formatDate(doc.created_at)}
                         </td>
-                        <td className="px-6 py-4">
+                        {/* <td className="px-6 py-4">
                           <code className="text-xs text-gray-500 font-mono">
                             {doc.file_hash.substring(0, 16)}...
                           </code>
-                        </td>
+                        </td> */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
                             {/* <button
@@ -605,7 +605,7 @@ const Documents: React.FC = () => {
                             </button> */}
                             <button
                               onClick={() => setDeleteId(doc.id)}
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                              className="p-2 text-red-600 cursor-pointer hover:bg-red-50 rounded-lg transition-colors"
                               title="Delete document"
                             >
                               <Trash2 className="w-5 h-5" />

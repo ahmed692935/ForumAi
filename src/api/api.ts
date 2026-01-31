@@ -59,3 +59,9 @@ export const sendChatMessage = async (question: string): Promise<Response> => {
 
   return response;
 };
+
+// Get all users (Admin only)
+export const getAllUsers = async (): Promise<any> => {
+  const response = await api.get("/admin/users");
+  return response.data;
+};

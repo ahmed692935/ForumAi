@@ -1,6 +1,16 @@
 // import React, { useState, useEffect } from "react";
 // import { Link, useNavigate } from "react-router-dom";
-// import { Menu, X, ChevronRight, User, LogOut, Settings } from "lucide-react";
+// import {
+//   Menu,
+//   X,
+//   ChevronRight,
+//   // User,
+//   LogOut,
+//   // Settings,
+//   MessageCircle,
+//   Upload,
+//   FileText,
+// } from "lucide-react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import { toast } from "react-toastify";
 // import Flogo from "../../src/assets/images/flogo.svg";
@@ -182,40 +192,56 @@
 //                             <div className="text-sm font-bold text-gray-800">
 //                               {user.email}
 //                             </div>
-//                             {/* <div className="text-xs text-gray-600 capitalize">
-//                               {user.role} • ID: {user.id}
-//                             </div> */}
 //                           </div>
 //                         </div>
 //                       </div>
 
 //                       {/* Menu Items */}
 //                       <div className="py-2">
-//                         {/* <button
-//                           onClick={() => {
-//                             setIsProfileOpen(false);
-//                             // Navigate to profile page when implemented
-//                             toast.info("Profile page coming soon!");
-//                           }}
-//                           className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
-//                         >
-//                           <User className="w-4 h-4 text-emerald-600" />
-//                           <span>My Profile</span>
-//                         </button> */}
+//                         {/* Role-based menu items */}
+//                         {user.role === "user" ? (
+//                           // User Role: Show Chat
+//                           <button
+//                             onClick={() => {
+//                               setIsProfileOpen(false);
+//                               navigate("/chat");
+//                             }}
+//                             className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
+//                           >
+//                             <MessageCircle className="w-4 h-4 text-emerald-600" />
+//                             <span className="font-medium">Chat</span>
+//                           </button>
+//                         ) : (
+//                           // Admin Role: Show Knowledge Base and Documents
+//                           <>
+//                             <button
+//                               onClick={() => {
+//                                 setIsProfileOpen(false);
+//                                 navigate("/knowledge-base");
+//                               }}
+//                               className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
+//                             >
+//                               <Upload className="w-4 h-4 text-emerald-600" />
+//                               <span className="font-medium">
+//                                 Knowledge Base
+//                               </span>
+//                             </button>
+//                             <button
+//                               onClick={() => {
+//                                 setIsProfileOpen(false);
+//                                 navigate("/documents");
+//                               }}
+//                               className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
+//                             >
+//                               <FileText className="w-4 h-4 text-emerald-600" />
+//                               <span className="font-medium">
+//                                 Documents List
+//                               </span>
+//                             </button>
+//                           </>
+//                         )}
 
-//                         {/* <button
-//                           onClick={() => {
-//                             setIsProfileOpen(false);
-//                             // Navigate to settings page when implemented
-//                             toast.info("Settings page coming soon!");
-//                           }}
-//                           className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
-//                         >
-//                           <Settings className="w-4 h-4 text-emerald-600" />
-//                           <span>Settings</span>
-//                         </button> */}
-
-//                         {/* <div className="border-t border-gray-200 my-2"></div> */}
+//                         <div className="border-t border-gray-200 my-2"></div>
 
 //                         <button
 //                           onClick={handleLogout}
@@ -309,28 +335,45 @@
 //                     </div>
 //                   </div>
 
-//                   {/* Mobile Menu Items */}
-//                   <button
-//                     onClick={() => {
-//                       setIsMobileMenuOpen(false);
-//                       toast.info("Profile page coming soon!");
-//                     }}
-//                     className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
-//                   >
-//                     <User className="w-5 h-5 text-emerald-600" />
-//                     <span className="font-medium">My Profile</span>
-//                   </button>
+//                   {/* Mobile Menu Items - Role Based */}
+//                   {user.role === "user" ? (
+//                     // User Role: Show Chat
+//                     <button
+//                       onClick={() => {
+//                         setIsMobileMenuOpen(false);
+//                         navigate("/chat");
+//                       }}
+//                       className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
+//                     >
+//                       <MessageCircle className="w-5 h-5 text-emerald-600" />
+//                       <span className="font-medium">Chat</span>
+//                     </button>
+//                   ) : (
+//                     // Admin Role: Show Knowledge Base and Documents
+//                     <>
+//                       <button
+//                         onClick={() => {
+//                           setIsMobileMenuOpen(false);
+//                           navigate("/knowledge-base");
+//                         }}
+//                         className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
+//                       >
+//                         <Upload className="w-5 h-5 text-emerald-600" />
+//                         <span className="font-medium">Knowledge Base</span>
+//                       </button>
 
-//                   <button
-//                     onClick={() => {
-//                       setIsMobileMenuOpen(false);
-//                       toast.info("Settings page coming soon!");
-//                     }}
-//                     className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
-//                   >
-//                     <Settings className="w-5 h-5 text-emerald-600" />
-//                     <span className="font-medium">Settings</span>
-//                   </button>
+//                       <button
+//                         onClick={() => {
+//                           setIsMobileMenuOpen(false);
+//                           navigate("/documents");
+//                         }}
+//                         className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
+//                       >
+//                         <FileText className="w-5 h-5 text-emerald-600" />
+//                         <span className="font-medium">Documents List</span>
+//                       </button>
+//                     </>
+//                   )}
 
 //                   <button
 //                     onClick={handleLogout}
@@ -375,16 +418,15 @@ import {
   Menu,
   X,
   ChevronRight,
-  // User,
   LogOut,
-  // Settings,
   MessageCircle,
   Upload,
   FileText,
+  User,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import Flogo from "../../src/assets/images/flogo.svg";
+import Flogo from "../assets/images/flogo.svg";
 
 interface NavLink {
   name: string;
@@ -481,6 +523,68 @@ const Navbar: React.FC = () => {
     return email.charAt(0).toUpperCase();
   };
 
+  // Get role-based menu items
+  const getRoleMenuItems = () => {
+    if (!user) return [];
+
+    if (user.role === "user") {
+      return [
+        {
+          icon: MessageCircle,
+          label: "Chat",
+          onClick: () => {
+            setIsProfileOpen(false);
+            setIsMobileMenuOpen(false);
+            navigate("/chat");
+          },
+        },
+      ];
+    } else if (user.role === "admin") {
+      return [
+        {
+          icon: Upload,
+          label: "Knowledge Base",
+          onClick: () => {
+            setIsProfileOpen(false);
+            setIsMobileMenuOpen(false);
+            navigate("/knowledge-base");
+          },
+        },
+        {
+          icon: FileText,
+          label: "Documents List",
+          onClick: () => {
+            setIsProfileOpen(false);
+            setIsMobileMenuOpen(false);
+            navigate("/documents");
+          },
+        },
+        // {
+        //   icon: User,
+        //   label: "OnBoard user",
+        //   onClick: () => {
+        //     setIsProfileOpen(false);
+        //     setIsMobileMenuOpen(false);
+        //     navigate("/onboard-user");
+        //   },
+        // },
+        {
+          icon: User,
+          label: "Users",
+          onClick: () => {
+            setIsProfileOpen(false);
+            setIsMobileMenuOpen(false);
+            navigate("/users-list");
+          },
+        },
+      ];
+    }
+
+    return [];
+  };
+
+  const roleMenuItems = getRoleMenuItems();
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -501,6 +605,7 @@ const Navbar: React.FC = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
+            {/* Platform & Features Links */}
             {navLinks.map((link, index) => (
               <motion.a
                 key={link.name}
@@ -514,6 +619,26 @@ const Navbar: React.FC = () => {
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-emerald-600 group-hover:w-full transition-all duration-300" />
               </motion.a>
             ))}
+
+            {/* Role-based Navigation Links (if logged in) */}
+            {user &&
+              roleMenuItems.map((item, index) => {
+                const Icon = item.icon;
+                return (
+                  <motion.button
+                    key={item.label}
+                    onClick={item.onClick}
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: (navLinks.length + index) * 0.1 }}
+                    className="relative px-4 py-2 text-sm font-medium text-gray-600 hover:text-black transition-colors group flex items-center gap-2"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.label}
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-emerald-600 group-hover:w-full transition-all duration-300" />
+                  </motion.button>
+                );
+              })}
           </div>
 
           {/* CTA Buttons or Profile */}
@@ -563,57 +688,15 @@ const Navbar: React.FC = () => {
                             <div className="text-sm font-bold text-gray-800">
                               {user.email}
                             </div>
+                            <div className="text-xs text-gray-600 capitalize">
+                              {user.role}
+                            </div>
                           </div>
                         </div>
                       </div>
 
                       {/* Menu Items */}
                       <div className="py-2">
-                        {/* Role-based menu items */}
-                        {user.role === "user" ? (
-                          // User Role: Show Chat
-                          <button
-                            onClick={() => {
-                              setIsProfileOpen(false);
-                              navigate("/chat");
-                            }}
-                            className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
-                          >
-                            <MessageCircle className="w-4 h-4 text-emerald-600" />
-                            <span className="font-medium">Chat</span>
-                          </button>
-                        ) : (
-                          // Admin Role: Show Knowledge Base and Documents
-                          <>
-                            <button
-                              onClick={() => {
-                                setIsProfileOpen(false);
-                                navigate("/knowledge-base");
-                              }}
-                              className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
-                            >
-                              <Upload className="w-4 h-4 text-emerald-600" />
-                              <span className="font-medium">
-                                Knowledge Base
-                              </span>
-                            </button>
-                            <button
-                              onClick={() => {
-                                setIsProfileOpen(false);
-                                navigate("/documents");
-                              }}
-                              className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
-                            >
-                              <FileText className="w-4 h-4 text-emerald-600" />
-                              <span className="font-medium">
-                                Documents List
-                              </span>
-                            </button>
-                          </>
-                        )}
-
-                        <div className="border-t border-gray-200 my-2"></div>
-
                         <button
                           onClick={handleLogout}
                           className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -629,12 +712,12 @@ const Navbar: React.FC = () => {
             ) : (
               // Login/Signup Buttons (when not logged in)
               <>
-                <Link
+                {/* <Link
                   to="/login"
                   className="px-6 py-2.5 text-sm font-semibold text-black hover:text-emerald-600 transition-colors"
                 >
                   Log In
-                </Link>
+                </Link> */}
                 <Link
                   to="/login"
                   className="group relative px-6 py-2.5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold text-sm rounded-lg overflow-hidden hover:shadow-lg hover:shadow-emerald-500/50 transition-all"
@@ -673,6 +756,7 @@ const Navbar: React.FC = () => {
             className="md:hidden bg-white/98 backdrop-blur-xl border-t border-emerald-500/20"
           >
             <div className="px-6 py-6 space-y-4">
+              {/* Platform & Features */}
               {navLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
@@ -707,44 +791,19 @@ const Navbar: React.FC = () => {
                   </div>
 
                   {/* Mobile Menu Items - Role Based */}
-                  {user.role === "user" ? (
-                    // User Role: Show Chat
-                    <button
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                        navigate("/chat");
-                      }}
-                      className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
-                    >
-                      <MessageCircle className="w-5 h-5 text-emerald-600" />
-                      <span className="font-medium">Chat</span>
-                    </button>
-                  ) : (
-                    // Admin Role: Show Knowledge Base and Documents
-                    <>
+                  {roleMenuItems.map((item) => {
+                    const Icon = item.icon;
+                    return (
                       <button
-                        onClick={() => {
-                          setIsMobileMenuOpen(false);
-                          navigate("/knowledge-base");
-                        }}
+                        key={item.label}
+                        onClick={item.onClick}
                         className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
                       >
-                        <Upload className="w-5 h-5 text-emerald-600" />
-                        <span className="font-medium">Knowledge Base</span>
+                        <Icon className="w-5 h-5 text-emerald-600" />
+                        <span className="font-medium">{item.label}</span>
                       </button>
-
-                      <button
-                        onClick={() => {
-                          setIsMobileMenuOpen(false);
-                          navigate("/documents");
-                        }}
-                        className="w-full flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-emerald-50 rounded-lg transition-colors"
-                      >
-                        <FileText className="w-5 h-5 text-emerald-600" />
-                        <span className="font-medium">Documents List</span>
-                      </button>
-                    </>
-                  )}
+                    );
+                  })}
 
                   <button
                     onClick={handleLogout}
@@ -756,14 +815,14 @@ const Navbar: React.FC = () => {
                 </div>
               ) : (
                 // Mobile Login/Signup Buttons
-                <div className="pt-6 space-y-3">
-                  <Link
+                <div className="pt-6 space-y-3 border-t border-gray-200">
+                  {/* <Link
                     to="/login"
                     className="block w-full text-center px-6 py-3 text-black font-semibold border border-emerald-500/30 rounded-lg hover:bg-emerald-500/10 transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Log In
-                  </Link>
+                  </Link> */}
                   <Link
                     to="/login"
                     className="block w-full text-center px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-emerald-500/50 transition-all"

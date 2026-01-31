@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 // import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -12,12 +12,17 @@ import {
 import { toast } from "react-toastify";
 import { uploadDocument } from "../api/api";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 const KnowledgeBase: React.FC = () => {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [dragActive, setDragActive] = useState<boolean>(false);
+
+  const navigate = useNavigate();
 
   const handleDrag = (e: React.DragEvent) => {
     e.preventDefault();
@@ -106,14 +111,18 @@ const KnowledgeBase: React.FC = () => {
         setFile(null);
         setUploadProgress(0);
       }, 1000);
+      navigate("/documents");
     } catch (error: unknown) {
       let errorMessage = "Upload failed. Please try again.";
 
       if (typeof error === "object" && error !== null && "response" in error) {
         const err = error as {
-          response?: { data?: { message?: string } };
+          response?: { data?: { message?: string; error?: string } };
         };
-        errorMessage = err.response?.data?.message || errorMessage;
+        errorMessage =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          "Upload failed. Please try again.";
       }
 
       toast.error(errorMessage, {
@@ -190,7 +199,18 @@ const KnowledgeBase: React.FC = () => {
                 : "border-gray-300 hover:border-emerald-400 hover:bg-gray-50"
             }`}
           >
+            {/* <input
+              type="file"
+              id="file-upload"
+              className="hidden"
+              accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+              onChange={(e) =>
+                e.target.files && handleFileChange(e.target.files[0])
+              }
+              disabled={isUploading}
+            /> */}
             <input
+              ref={fileInputRef}
               type="file"
               id="file-upload"
               className="hidden"
@@ -243,7 +263,14 @@ const KnowledgeBase: React.FC = () => {
                     <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
                   ) : (
                     <button
-                      onClick={() => setFile(null)}
+                      onClick={() => {
+                        setFile(null);
+                        setUploadProgress(0);
+
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
+                      }}
                       className="text-red-500 hover:text-red-700 transition-colors"
                     >
                       <AlertCircle className="w-6 h-6" />
@@ -277,8 +304,21 @@ const KnowledgeBase: React.FC = () => {
                     >
                       Upload Document
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => setFile(null)}
+                      className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
+                    >
+                      Cancel
+                    </button> */}
+                    <button
+                      onClick={() => {
+                        setFile(null);
+                        setUploadProgress(0);
+
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = "";
+                        }
+                      }}
                       className="px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors"
                     >
                       Cancel
