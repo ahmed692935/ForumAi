@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import {
   Users,
@@ -11,9 +11,11 @@ import {
   RefreshCw,
   Loader2,
   UserPlus,
+  Trash2,
+  AlertCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { getAllUsers } from "../api/api";
+import { deleteUser, getAllUsers } from "../api/api";
 import Navbar from "../components/Navbar";
 
 interface UserData {
@@ -28,6 +30,8 @@ const UsersList: React.FC = () => {
   const navigate = useNavigate();
   const [users, setUsers] = useState<UserData[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<UserData[]>([]);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
@@ -71,6 +75,31 @@ const UsersList: React.FC = () => {
       setFilteredUsers(filtered);
     }
   }, [searchQuery, users]);
+
+  const handleDelete = async (userId: number) => {
+    setIsDeleting(true);
+    try {
+      await deleteUser(userId);
+
+      toast.success("User deleted successfully", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+
+      setDeleteId(null);
+
+      // Refresh the list
+      fetchUsers();
+    } catch (error: any) {
+      console.error("Delete error:", error);
+      toast.error(error?.response?.data?.message || "Failed to delete user", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const getRoleBadge = (role: string) => {
     if (role === "admin") {
@@ -146,58 +175,6 @@ const UsersList: React.FC = () => {
             </div>
           </div>
         </motion.div>
-
-        {/* Stats Cards */}
-        {/* <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
-        >
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                <Users className="w-6 h-6 text-emerald-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Total Users</p>
-                <p className="text-3xl font-black text-gray-900">
-                  {users.length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Shield className="w-6 h-6 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">Admins</p>
-                <p className="text-3xl font-black text-gray-900">
-                  {users.filter((u) => u.role === "admin").length}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                <User className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600 font-medium">
-                  Regular Users
-                </p>
-                <p className="text-3xl font-black text-gray-900">
-                  {users.filter((u) => u.role === "user").length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </motion.div> */}
 
         {/* Search Bar */}
         <motion.div
@@ -306,6 +283,17 @@ const UsersList: React.FC = () => {
                           {formatDate(user.created_at)}
                         </div>
                       </td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setDeleteId(user.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Delete user"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </td>
                     </motion.tr>
                   ))}
                 </tbody>
@@ -326,6 +314,60 @@ const UsersList: React.FC = () => {
           </motion.div>
         )}
       </div>
+
+      <AnimatePresence>
+        {deleteId && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                  <AlertCircle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">
+                    Delete User
+                  </h3>
+                </div>
+              </div>
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to delete this user? This will permanently
+                remove them from the system.
+              </p>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setDeleteId(null)}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-3 bg-gray-200 text-gray-700 font-semibold rounded-lg hover:bg-gray-300 transition-colors disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDelete(deleteId)}
+                  disabled={isDeleting}
+                  className="flex-1 px-4 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="w-4 h-4" />
+                      Delete
+                    </>
+                  )}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

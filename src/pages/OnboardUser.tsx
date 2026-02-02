@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { registerUser } from "../api/api";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 interface OnboardFormData {
   email: string;
@@ -28,6 +29,7 @@ const OnboardUser: React.FC = () => {
     password: "",
     confirmPassword: "",
   });
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: any): Promise<void> => {
     e.preventDefault();
@@ -76,6 +78,7 @@ const OnboardUser: React.FC = () => {
         password: "",
         confirmPassword: "",
       });
+      navigate("/users-list");
     } catch (err: any) {
       const errorMessage =
         err?.response?.data?.message ||
