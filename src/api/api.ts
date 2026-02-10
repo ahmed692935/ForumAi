@@ -41,12 +41,16 @@ export const deleteDocument = async (documentId: number): Promise<void> => {
 };
 
 // Chat stream (User)
-export const sendChatMessage = async (question: string): Promise<Response> => {
+export const sendChatMessage = async (
+  question: string,
+  conversationId: number,
+): Promise<Response> => {
   const token = localStorage.getItem("token");
 
   // Use URLSearchParams for application/x-www-form-urlencoded
   const params = new URLSearchParams();
   params.append("question", question);
+  params.append("conversation_id", conversationId.toString());
 
   const response = await fetch(`${import.meta.env.VITE_BASE_URL}/chat/stream`, {
     method: "POST",
@@ -68,4 +72,36 @@ export const getAllUsers = async (): Promise<any> => {
 
 export const deleteUser = async (userId: number): Promise<void> => {
   await api.delete(`/admin/users/${userId}`);
+};
+
+// Get conversation history
+export const getConversationHistory = async (): Promise<any> => {
+  const response = await api.get("/conversations");
+  return response.data;
+};
+
+// Create new conversation
+export const createConversation = async (): Promise<any> => {
+  const response = await api.post("/conversations");
+  return response.data;
+};
+
+// Get messages for a specific conversation
+export const getConversationMessages = async (
+  conversationId: number,
+): Promise<any> => {
+  const response = await api.get(`/conversations/${conversationId}/messages`);
+  return response.data;
+};
+
+// Get RAG prompt (Admin only)
+export const getRagPrompt = async (): Promise<any> => {
+  const response = await api.get("/admin/rag-prompt");
+  return response.data;
+};
+
+// Update RAG prompt (Admin only)
+export const updateRagPrompt = async (prompt: string): Promise<any> => {
+  const response = await api.put("/admin/rag-prompt", { prompt_body: prompt });
+  return response.data;
 };
