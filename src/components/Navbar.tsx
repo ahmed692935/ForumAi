@@ -16,10 +16,10 @@ import { toast } from "react-toastify";
 import Flogo from "../assets/images/flogo.svg";
 import PromptEditor from "./Prompt";
 
-interface NavLink {
-  name: string;
-  href: string;
-}
+// interface NavLink {
+//   name: string;
+//   href: string;
+// }
 
 interface UserData {
   id: number;
@@ -102,9 +102,13 @@ const Navbar: React.FC = () => {
     navigate("/");
   };
 
-  const navLinks: NavLink[] = [
-    { name: "Platform", href: "#platform" },
-    { name: "Features", href: "#features" },
+  // const navLinks: NavLink[] = [
+  //   { name: "Platform", href: "#platform" },
+  //   { name: "Features", href: "#features" },
+  // ];
+  const navLinks = [
+    { name: "Platform", sectionId: "platform" },
+    { name: "Features", sectionId: "features" },
   ];
 
   // Get user initials for avatar
@@ -159,7 +163,7 @@ const Navbar: React.FC = () => {
         },
         {
           icon: TextSelect,
-          label: "Prompt",
+          label: "Persona",
           onClick: () => {
             setIsProfileOpen(false);
             setIsMobileMenuOpen(false);
@@ -196,10 +200,21 @@ const Navbar: React.FC = () => {
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1">
               {/* Platform & Features Links */}
-              {navLinks.map((link, index) => (
+              {/* {navLinks.map((link, index) => (
                 <motion.a
+                  key={link.name} */}
+              {navLinks.map((link, index) => (
+                <motion.button
                   key={link.name}
-                  href={link.href}
+                  onClick={() => {
+                    if (window.location.pathname === "/") {
+                      const element = document.getElementById(link.sectionId);
+                      element?.scrollIntoView({ behavior: "smooth" });
+                    } else {
+                      navigate(`/#${link.sectionId}`);
+                    }
+                  }}
+                  // href={link.href}
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
@@ -207,7 +222,7 @@ const Navbar: React.FC = () => {
                 >
                   {link.name}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-emerald-400 to-emerald-600 group-hover:w-full transition-all duration-300" />
-                </motion.a>
+                </motion.button>
               ))}
 
               {/* Role-based Navigation Links (if logged in) */}
@@ -344,7 +359,7 @@ const Navbar: React.FC = () => {
                 {navLinks.map((link, index) => (
                   <motion.a
                     key={link.name}
-                    href={link.href}
+                    // href={link.href}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.1 }}

@@ -105,3 +105,10 @@ export const updateRagPrompt = async (prompt: string): Promise<any> => {
   const response = await api.put("/admin/rag-prompt", { prompt_body: prompt });
   return response.data;
 };
+
+// Delete conversation
+export const deleteConversation = async (
+  conversationId: number,
+): Promise<void> => {
+  await api.delete(`/conversations/${conversationId}`);
+};

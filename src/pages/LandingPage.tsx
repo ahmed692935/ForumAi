@@ -9,8 +9,12 @@ const LandingPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-black">
       <Navbar />
-      <Hero />
-      <Features />
+      <section id="platform">
+        <Hero />
+      </section>
+      <section id="features">
+        <Features />
+      </section>
       <CTA />
       <Footer />
     </div>

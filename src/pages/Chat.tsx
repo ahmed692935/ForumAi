@@ -10,13 +10,11 @@ import {
   Bot,
   Copy,
   Check,
-  Trash2,
-  RefreshCw,
-  MessageSquarePlus,
   History,
   X,
   Clock,
   Menu,
+  Trash2,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -24,6 +22,7 @@ import {
   getConversationHistory,
   createConversation,
   getConversationMessages,
+  deleteConversation,
 } from "../api/api";
 import Navbar from "../components/Navbar";
 
@@ -53,6 +52,9 @@ const Chat: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,21 +96,6 @@ const Chat: React.FC = () => {
     }
   };
 
-  // Create a new conversation on mount
-  const initializeConversation = async () => {
-    try {
-      const response = await createConversation();
-      const conversationId = response.id;
-
-      setCurrentConversationId(conversationId);
-      fetchConversationHistory();
-
-      console.log("New conversation created:", conversationId);
-    } catch (error) {
-      console.error("Failed to create conversation:", error);
-    }
-  };
-
   // Load messages for a specific conversation
   const loadConversationMessages = async (conversationId: number) => {
     setIsLoadingMessages(true);
@@ -145,13 +132,44 @@ const Chat: React.FC = () => {
       setIsLoadingMessages(false);
     }
   };
+
+  // Delete conversation
+  const handleDeleteConversation = async (conversationId: number) => {
+    setIsDeleting(true);
+    try {
+      await deleteConversation(conversationId);
+
+      // If deleted conversation was active, clear messages
+      if (currentConversationId === conversationId) {
+        setMessages([]);
+        setCurrentConversationId(null);
+      }
+
+      // Refresh conversation history
+      fetchConversationHistory();
+
+      toast.success("Conversation deleted", {
+        position: "top-right",
+        autoClose: 2000,
+      });
+    } catch (error: any) {
+      console.error("Failed to delete conversation:", error);
+      toast.error("Failed to delete conversation", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+    } finally {
+      setIsDeleting(false);
+      setDeleteId(null);
+    }
+  };
+
   const hasInitialized = useRef(false);
   useEffect(() => {
     if (hasInitialized.current) return;
-
     hasInitialized.current = true;
 
-    initializeConversation();
+    // Only fetch conversation history, don't create new conversation
     fetchConversationHistory();
   }, []);
 
@@ -173,30 +191,27 @@ const Chat: React.FC = () => {
     }
   }, [input]);
 
-  const handleNewConversation = async () => {
-    setMessages([]);
-    setInput("");
-
-    // Create new conversation
+  const handleStartChat = async () => {
+    setIsCreatingChat(true);
     try {
       const response = await createConversation();
-      // const conversationId = response.conversation_id;
-      // setCurrentConversationId(conversationId);
       setCurrentConversationId(response.id);
 
       // Refresh conversation history
       fetchConversationHistory();
 
-      toast.success("New chatroom created", {
+      toast.success("New chat started!", {
         position: "top-right",
         autoClose: 1500,
       });
     } catch (error: any) {
       console.error("Failed to create conversation:", error);
-      toast.error("Failed to create new conversation", {
+      toast.error("Failed to start chat", {
         position: "top-right",
         autoClose: 3000,
       });
+    } finally {
+      setIsCreatingChat(false);
     }
   };
 
@@ -208,6 +223,18 @@ const Chat: React.FC = () => {
     e.preventDefault();
 
     if (!input.trim() || isLoading) return;
+
+    // If no conversation exists, create one first
+    if (!currentConversationId) {
+      try {
+        const response = await createConversation();
+        setCurrentConversationId(response.id);
+        fetchConversationHistory();
+      } catch {
+        toast.error("Failed to create conversation");
+        return;
+      }
+    }
 
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
@@ -352,8 +379,7 @@ const Chat: React.FC = () => {
         ),
       );
 
-      // Refresh conversation history after sending a message
-      // fetchConversationHistory();
+      // Removed: fetchConversationHistory() - Don't refresh history after every message
     } catch (error: any) {
       console.error("Chat error:", error);
       toast.error(error?.message || "Failed to send message", {
@@ -401,48 +427,15 @@ const Chat: React.FC = () => {
     }
   };
 
-  const handleClearChat = () => {
-    if (messages.length === 0) return;
-
-    if (
-      window.confirm(
-        "Are you sure you want to clear all messages? This cannot be undone.",
-      )
-    ) {
-      setMessages([]);
-      toast.success("Chat cleared", {
-        position: "top-right",
-        autoClose: 2000,
-      });
-    }
-  };
-
-  const handleRetry = () => {
-    if (messages.length < 2) return;
-
-    const lastUserMessage = [...messages]
-      .reverse()
-      .find((msg) => msg.role === "user");
-
-    if (lastUserMessage) {
-      setInput(lastUserMessage.content);
-      textareaRef.current?.focus();
-    }
-  };
-
-  const formatDate = (dateString: string) => {
+  const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (days === 0) return "Today";
-    if (days === 1) return "Yesterday";
-    if (days < 7) return `${days} days ago`;
-
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     }).format(date);
   };
 
@@ -464,7 +457,7 @@ const Chat: React.FC = () => {
               >
                 {/* Sidebar Header */}
                 <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-emerald-500 to-emerald-600">
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2 text-white">
                       <History className="w-5 h-5" />
                       <h2 className="font-bold text-lg">Chat History</h2>
@@ -476,13 +469,6 @@ const Chat: React.FC = () => {
                       <X className="w-5 h-5 text-white" />
                     </button>
                   </div>
-                  <button
-                    onClick={handleNewConversation}
-                    className="w-full px-4 py-2.5 bg-white text-emerald-600 font-semibold rounded-lg hover:bg-emerald-50 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <MessageSquarePlus className="w-5 h-5" />
-                    New Chat
-                  </button>
                 </div>
 
                 {/* Conversations List */}
@@ -498,34 +484,48 @@ const Chat: React.FC = () => {
                         No chat history yet
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
-                        Start chatting to create your first chat
+                        Start chatting to create your first conversation
                       </p>
                     </div>
                   ) : (
                     conversations.map((conv) => (
-                      <motion.button
-                        key={conv.id}
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => handleSelectConversation(conv.id)}
-                        className={`w-full p-3 rounded-xl text-left transition-colors ${
-                          currentConversationId === conv.id
-                            ? "bg-emerald-50 border-2 border-emerald-500"
-                            : "bg-gray-50 border-2 border-transparent hover:bg-gray-100"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-1">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">
-                              {conv.first_message || `Conversation ${conv.id}`}
-                            </p>
+                      <div key={conv.id} className="relative group">
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleSelectConversation(conv.id)}
+                          className={`w-full p-3 rounded-xl text-left transition-colors ${
+                            currentConversationId === conv.id
+                              ? "bg-emerald-50 border-2 border-emerald-500"
+                              : "bg-gray-50 border-2 border-transparent hover:bg-gray-100"
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <div className="flex-1 min-w-0 pr-8">
+                              <p className="text-sm font-semibold text-gray-900 truncate">
+                                {conv.first_message ||
+                                  `Conversation ${conv.id}`}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                          <Clock className="w-3 h-3" />
-                          {formatDate(conv.created_at)}
-                        </div>
-                      </motion.button>
+                          <div className="flex items-center gap-1.5 text-xs text-gray-500">
+                            <Clock className="w-3 h-3" />
+                            {formatDateTime(conv.created_at)}
+                          </div>
+                        </motion.button>
+
+                        {/* Delete Button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setDeleteId(conv.id);
+                          }}
+                          className="absolute top-5 right-3 p-1.5 bg-red-100 hover:bg-red-200 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Delete conversation"
+                        >
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </button>
+                      </div>
                     ))
                   )}
                 </div>
@@ -539,7 +539,7 @@ const Chat: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between"
+              className="flex items-center justify-between mb-4"
             >
               <div className="flex items-center gap-3">
                 {!isSidebarOpen && (
@@ -552,32 +552,6 @@ const Chat: React.FC = () => {
                   </button>
                 )}
               </div>
-
-              {/* Action Buttons */}
-              {messages.length > 0 && (
-                <div className="flex gap-2">
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    onClick={handleRetry}
-                    disabled={isLoading}
-                    className="p-2 text-gray-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors disabled:opacity-50"
-                    title="Retry last message"
-                  >
-                    <RefreshCw className="w-5 h-5" />
-                  </motion.button>
-                  <motion.button
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    onClick={handleClearChat}
-                    disabled={isLoading}
-                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50"
-                    title="Clear chat"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </motion.button>
-                </div>
-              )}
             </motion.div>
 
             {/* Chat Container */}
@@ -595,7 +569,7 @@ const Chat: React.FC = () => {
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="h-full flex items-center justify-center">
-                    <div className="text-center space-y-4">
+                    <div className="text-center space-y-6">
                       <motion.div
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
@@ -610,12 +584,26 @@ const Chat: React.FC = () => {
                       </motion.div>
                       <div>
                         <h3 className="text-xl font-bold text-gray-900 mb-2">
-                          Start a chat
+                          Welcome to FORUM AI
                         </h3>
-                        <p className="text-gray-600 text-sm max-w-md mx-auto">
+                        <p className="text-gray-600 text-sm max-w-md mx-auto mb-6">
                           Ask me anything about your documents, data, or
                           business insights.
                         </p>
+                        <button
+                          onClick={handleStartChat}
+                          disabled={isCreatingChat}
+                          className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                        >
+                          {isCreatingChat ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            "Start a Chat"
+                          )}
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -826,46 +814,115 @@ const Chat: React.FC = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input Area */}
-              <div className="border-t border-gray-200 p-4 bg-gray-50">
-                <form onSubmit={handleSubmit} className="flex gap-3">
-                  <div className="flex-1 relative">
-                    <textarea
-                      ref={textareaRef}
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={handleKeyDown}
-                      placeholder="Type your message..."
-                      disabled={isLoading}
-                      rows={1}
-                      className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-xl resize-none focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed max-h-32 transition-all"
-                    />
-                  </div>
-                  <motion.button
-                    type="submit"
-                    disabled={isLoading || !input.trim()}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span className="font-semibold">Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-5 h-5" />
-                        <span className="font-semibold">Send</span>
-                      </>
-                    )}
-                  </motion.button>
-                </form>
-              </div>
+              {/* Input Area - Only show when conversation exists */}
+              {currentConversationId && (
+                <div className="border-t border-gray-200 p-4 bg-gray-50">
+                  <form onSubmit={handleSubmit} className="flex gap-3">
+                    <div className="flex-1 relative">
+                      <textarea
+                        ref={textareaRef}
+                        value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        placeholder="Type your message..."
+                        disabled={isLoading}
+                        rows={1}
+                        className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-xl resize-none focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed max-h-32 transition-all"
+                      />
+                    </div>
+                    <motion.button
+                      type="submit"
+                      disabled={isLoading || !input.trim()}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="px-6 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl hover:shadow-lg hover:shadow-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="w-5 h-5 animate-spin" />
+                          <span className="font-semibold">Sending...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-5 h-5" />
+                          <span className="font-semibold">Send</span>
+                        </>
+                      )}
+                    </motion.button>
+                  </form>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <AnimatePresence>
+        {deleteId && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setDeleteId(null)}
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="fixed inset-0 flex items-center justify-center z-50 p-4"
+            >
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                    <Trash2 className="w-6 h-6 text-red-600" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-gray-900">
+                      Delete Conversation
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      This action cannot be undone
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-700 mb-6">
+                  Are you sure you want to delete this conversation? All
+                  messages will be permanently removed.
+                </p>
+                <div className="flex gap-3 justify-end">
+                  <button
+                    onClick={() => setDeleteId(null)}
+                    disabled={isDeleting}
+                    className="px-4 py-2 text-gray-700 font-semibold border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDeleteConversation(deleteId)}
+                    disabled={isDeleting}
+                    className="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isDeleting ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Deleting...
+                      </>
+                    ) : (
+                      <>
+                        <Trash2 className="w-4 h-4" />
+                        Delete
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
