@@ -15,6 +15,7 @@ import {
   Clock,
   Menu,
   Trash2,
+  Plus,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -195,6 +196,7 @@ const Chat: React.FC = () => {
     setIsCreatingChat(true);
     try {
       const response = await createConversation();
+      setMessages([]);
       setCurrentConversationId(response.id);
 
       // Refresh conversation history
@@ -462,6 +464,22 @@ const Chat: React.FC = () => {
                       <History className="w-5 h-5" />
                       <h2 className="font-bold text-lg">Chat History</h2>
                     </div>
+                    {/* NEW CHAT BUTTON */}
+                    <button
+                      onClick={handleStartChat}
+                      disabled={isCreatingChat}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+                      title="New Chat"
+                    >
+                      {isCreatingChat ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
+                      <span className="hidden cursor-pointer sm:inline">
+                        New Chat
+                      </span>
+                    </button>
                     <button
                       onClick={() => setIsSidebarOpen(false)}
                       className="p-1 hover:bg-white/20 rounded-lg transition-colors lg:hidden"
@@ -567,7 +585,8 @@ const Chat: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                ) : messages.length === 0 ? (
+                ) : // ) : messages.length === 0 ? (
+                !currentConversationId ? (
                   <div className="h-full flex items-center justify-center">
                     <div className="text-center space-y-6">
                       <motion.div
@@ -593,7 +612,7 @@ const Chat: React.FC = () => {
                         <button
                           onClick={handleStartChat}
                           disabled={isCreatingChat}
-                          className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
+                          className="px-8 py-3 cursor-pointer bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-semibold rounded-lg hover:shadow-lg hover:shadow-emerald-500/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 mx-auto"
                         >
                           {isCreatingChat ? (
                             <>
