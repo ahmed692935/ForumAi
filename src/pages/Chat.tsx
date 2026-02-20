@@ -56,8 +56,18 @@ const Chat: React.FC = () => {
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCreatingChat, setIsCreatingChat] = useState<boolean>(false);
+  const [selectedModel, setSelectedModel] = useState<string>("gpt-4o-official");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Available AI models
+  const availableModels = [
+    { value: "gpt-4o-official", label: "GPT-4o Official" },
+    { value: "gpt-4o-unofficial", label: "GPT-4o Unofficial" },
+    { value: "llama-3.1-8b-instant", label: "Llama 3.1 8B" },
+    { value: "llama-3.3-70b-versatile", label: "Llama 3.3 70B" },
+    { value: "moonshotai/kimi-k2-instruct-0905", label: "Kimi K2" },
+  ];
 
   // Preprocess markdown to fix formatting issues
   const preprocessMarkdown = (text: string): string => {
@@ -268,6 +278,7 @@ const Chat: React.FC = () => {
       const response = await sendChatMessage(
         userMessage.content,
         currentConversationId,
+        selectedModel,
       );
 
       if (!response.ok) {
@@ -849,6 +860,19 @@ const Chat: React.FC = () => {
                         className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-xl resize-none focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed max-h-32 transition-all"
                       />
                     </div>
+                    {/* Model Selector Dropdown */}
+                    <select
+                      value={selectedModel}
+                      onChange={(e) => setSelectedModel(e.target.value)}
+                      disabled={isLoading}
+                      className="px-4 py-3 bg-white border border-gray-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium text-gray-700 cursor-pointer"
+                    >
+                      {availableModels.map((model) => (
+                        <option key={model.value} value={model.value}>
+                          {model.label}
+                        </option>
+                      ))}
+                    </select>
                     <motion.button
                       type="submit"
                       disabled={isLoading || !input.trim()}

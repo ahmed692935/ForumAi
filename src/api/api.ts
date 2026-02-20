@@ -44,6 +44,7 @@ export const deleteDocument = async (documentId: number): Promise<void> => {
 export const sendChatMessage = async (
   question: string,
   conversationId: number,
+  model: string,
 ): Promise<Response> => {
   const token = localStorage.getItem("token");
 
@@ -51,6 +52,7 @@ export const sendChatMessage = async (
   const params = new URLSearchParams();
   params.append("question", question);
   params.append("conversation_id", conversationId.toString());
+  params.append("model", model);
 
   const response = await fetch(`${import.meta.env.VITE_BASE_URL}/chat/stream`, {
     method: "POST",
