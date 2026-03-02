@@ -989,6 +989,7 @@ import {
   Clock,
   Menu,
   Trash2,
+  Plus,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -1180,6 +1181,7 @@ const Chat: React.FC = () => {
     setIsCreatingChat(true);
     try {
       const response = await createConversation();
+      setMessages([]);
       setCurrentConversationId(response.id);
 
       // Refresh conversation history
@@ -1480,6 +1482,28 @@ const Chat: React.FC = () => {
                       <History className="w-5 h-5" />
                       <h2 className="font-bold text-lg">Chat History</h2>
                     </div>
+                    {/* NEW CHAT BUTTON */}
+                    <button
+                      onClick={handleStartChat}
+                      disabled={isCreatingChat}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-white/20 hover:bg-white/30 text-white rounded-lg text-sm font-semibold transition-all disabled:opacity-50"
+                      title="New Chat"
+                    >
+                      {isCreatingChat ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Plus className="w-4 h-4" />
+                      )}
+                      <span className="hidden cursor-pointer sm:inline">
+                        New Chat
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => setIsSidebarOpen(false)}
+                      className="p-1 hover:bg-white/20 rounded-lg transition-colors lg:hidden"
+                    >
+                      <X className="w-5 h-5 text-white" />
+                    </button>
                     <button
                       onClick={() => setIsSidebarOpen(false)}
                       className="p-1 hover:bg-white/20 rounded-lg transition-colors lg:hidden"
@@ -1661,7 +1685,7 @@ const Chat: React.FC = () => {
                         {/* Message Content */}
                         <div
                           className={`flex-1 max-w-[80%] ${
-                            message.role === "user" ? "text-right" : "text-left"
+                            message.role === "user" ? "text-left" : "text-left"
                           }`}
                         >
                           <div
@@ -1859,7 +1883,7 @@ const Chat: React.FC = () => {
                         placeholder="Type your message..."
                         disabled={isLoading}
                         rows={1}
-                        className="w-full px-4 py-3 pr-12 bg-white border border-gray-300 rounded-xl resize-none focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed max-h-32 transition-all"
+                        className="w-full !h-14 px-4 py-3 pr-12 bg-white border border-gray-300 rounded-xl resize-none focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 disabled:opacity-50 disabled:cursor-not-allowed max-h-32 transition-all"
                       />
                     </div>
 
