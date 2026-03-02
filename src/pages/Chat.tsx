@@ -1685,13 +1685,13 @@ const Chat: React.FC = () => {
                         {/* Message Content */}
                         <div
                           className={`flex-1 max-w-[80%] ${
-                            message.role === "user" ? "text-left" : "text-left"
+                            message.role === "user" ? "text-right" : "text-left"
                           }`}
                         >
                           <div
                             className={`inline-block px-6 py-4 rounded-2xl relative group ${
                               message.role === "user"
-                                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-tr-none shadow-lg shadow-emerald-500/30"
+                                ? "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-left rounded-tr-none shadow-lg shadow-emerald-500/30"
                                 : "bg-gray-100 text-gray-900 rounded-tl-none shadow-md"
                             }`}
                           >
